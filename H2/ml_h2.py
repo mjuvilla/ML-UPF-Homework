@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 def train(x_train, y_train):
     return np.dot(np.linalg.pinv(x_train), y_train)
 
+def f_function(x):
+    return x ** 2
+
 def generate_dataset(samples):
     x = np.random.rand(samples) * 2 - 1
-    y = x ** 2
+    y = f_function(x)
     x = np.array([[1, value] for value in x])
     return x, y
 
@@ -34,7 +37,7 @@ def get_variance(x, list_weights, average_results, y_test):
 
 if __name__ == "__main__":
 
-    num_classifiers = 1000
+    num_classifiers = 10000
 
     list_weights = np.empty(shape=(num_classifiers,2))
     list_error = list()
@@ -45,6 +48,13 @@ if __name__ == "__main__":
         x_test, y_test = generate_dataset(samples=1000)
 
         w = train(x_train, y_train)
+
+        # plt.plot([value[1] for value in x_train], y_train, "o")
+        # x = np.arange(-1, 1.1, 0.1)
+        # g = w[0] + w[1] *x
+        # plt.plot(x, g)
+        # plt.plot(x, f_function(x))
+        # plt.show()
 
         results = inference(x_test, w)
         error = compute_error(results, y_test)
@@ -58,6 +68,8 @@ if __name__ == "__main__":
     x_test, y_test = generate_dataset(samples=1000)
 
     average_results = get_average_function_results(x_test, list_weights)
+    a = np.array([value[0] for value in list_weights])
+    b = np.array([value[1] for value in list_weights])
     bias = compute_error(average_results, y_test)
     variance = get_variance(x_test, list_weights, average_results, y_test)
     print("Eout: " + str(eout))
@@ -65,11 +77,11 @@ if __name__ == "__main__":
     print("Variance: " + str(variance))
     print("Bias+Variance: " + str(bias + variance))
 
-    average_function = np.mean(list_weights, axis=0)
-
     x = np.arange(-1, 1.1, 0.1)
-    f = x ** 2
-    g = average_function[0] + average_function[1] * x
+    f = f_function(x)
+    g = np.mean(a) + np.mean(b) * x
 
-    plt.plot(x, f, x, g)
+    plt.plot(x, f, label="f")
+    plt.plot(x, g, label="g")
+    plt.legend()
     plt.show()
