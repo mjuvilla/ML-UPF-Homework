@@ -1,0 +1,127 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx} 
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{enumitem}
+\usepackage{float}
+
+\author{Marc Juvillà Garcia}
+\title{\vspace{-2cm}Homework 3. Machine Learning (MIIS)}
+
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+\item When is the bound of Theorem 3 better than the bound of Theorem 2 presented in the lecture? (What is the size of the smallest hypothesis class for which the former is better than the latter?)
+
+Theorem 2 (Halving): 
+
+\begin{equation}
+\sum_{t=1}^{n} l(x\textsubscript{t}, y\textsubscript{t}, \hat{y}\textsubscript{t}) \leq \log_2|H|
+\end{equation}
+
+Theorem 3 (Randomized Hypothesis Elimination): 
+
+\begin{equation}
+E\left[\sum_{t=1}^{n} l(x\textsubscript{t}, y\textsubscript{t}, \hat{y}\textsubscript{t})\right] \leq 1 + \ln|H|
+\end{equation}
+
+Solve:
+\begin{equation}
+1 + \ln|H| < \log_2|H|
+\end{equation}
+
+Knowing that:
+\begin{equation}
+\log_2|H| = \frac{ln|H|}{ln(2)}
+\end{equation}
+
+If we plug (4) into (3):
+\begin{equation}
+1 + \ln|H| < \frac{ln|H|}{ln(2)}
+\end{equation}
+
+And isolate $|H|$:
+\begin{equation}
+|H| > e^{\frac{ln(2)}{1-ln(2)}} \approx 9,57
+\end{equation}
+
+That is, the loss bound of RHE is better than the one from Halving when the hypothesis class has at least 10 items.
+
+\item What is the computational complexity of Randomized Hypothesis Elimination? (Hints: How expensive is it to generate a random hypothesis and test if it is in the version space? How many random hypotheses do we need to generate until we find a consistent one?)
+
+As Randomized Hypothesis Elimination draws only one hypothesis from the model class on each iteration, it has the same complexity as Hypothesis Elimination, plus maybe the cost of computing this random hypothesis, but I think this cost is negligible. For this reason, it only needs to find a consistent hypothesis instead of checking them all (like Halving does).
+
+\item Construct a hypothesis class and a sequence of examples for which Hypothesis Elimination (the non-randomized one) makes exactly $|H|-1$ mistakes. (Hint: a possible good idea is choosing the x\textsubscript{t}'s from the natural numbers 1, 2, ..., $|H|$ and consider the hypothesis class H consisting of functions of the form $h\textsubscript{k}(x) = I\{x \leq k\}$ (i.e., $h\textsubscript{k}(x) = 1$ if $x \leq k$ and
+$h\textsubscript{k}(x) = 0$ otherwise) for all k = 1, 2, ..., $|H|$.)
+
+Strategy: We have an hypothesis class of size $|H|$. Let h\textsubscript{$|H|$} be the target function (that is, $h\textsubscript{$|H|$}(x) = I\{x \leq |H|\}$), and x\textsubscript{t} be a sequence of natural numbers in the traditional order.\\
+For $x_1 = 1$ we will draw $h_1$, which will predict 1 correctly.\\
+For $x_2 = 2$ we will draw $h_1$ again, which will predict incorrectly. $h_1$ will be removed from the hypothesis class.\\
+At $x_{|H|}$ we will be incorrect again but we will delete the last wrong hypothesis, leaving the class hypothesis with just one item: the target hypothesis.
+
+Example:
+
+
+If we create an hypothesis class in which $h\textsubscript{k}(x) = 1$ if $x \leq k$ and 0 otherwise we will have these hypothesis:
+
+$h\textsubscript{1}(x) = 1\{x \leq 1\}$\\
+$h\textsubscript{2}(x) = 1\{x \leq 2\}$\\
+$h\textsubscript{3}(x) = 1\{x \leq 3\}$\\
+
+For a $|H|$ of 10 and target function H\textsubscript{10}:
+
+$t\textsubscript{1}: x\textsubscript{1} = 1 \rightarrow$ draw $H\textsubscript{1} \rightarrow H\textsubscript{1}(x\textsubscript{1}) = 1 \rightarrow y\textsubscript{1} = 1 \rightarrow H\textsubscript{1}(x\textsubscript{1}) = y\textsubscript{1} \rightarrow $ keep $H\textsubscript{1}$
+
+$t\textsubscript{2}: x\textsubscript{2} = 2 \rightarrow$ draw $H\textsubscript{1} \rightarrow H\textsubscript{1}(x\textsubscript{2}) = 0 \rightarrow y\textsubscript{1} = 1 \rightarrow H\textsubscript{1}(x\textsubscript{2}) \neq y\textsubscript{2} \rightarrow $ delete $H\textsubscript{1}$
+
+$t\textsubscript{3}: x\textsubscript{3} = 3 \rightarrow$ draw $H\textsubscript{2} \rightarrow H\textsubscript{2}(x\textsubscript{3}) = 0 \rightarrow y\textsubscript{3} = 1 \rightarrow H\textsubscript{2}(x\textsubscript{3}) \neq y\textsubscript{3} \rightarrow $ delete $H\textsubscript{2}$
+
+(...)
+
+$t\textsubscript{10}: x\textsubscript{10} = 10 \rightarrow$ draw $H\textsubscript{9} \rightarrow H\textsubscript{9}(x\textsubscript{10}) = 0 \rightarrow y\textsubscript{10} = 1 \rightarrow H\textsubscript{9}(x\textsubscript{10}) \neq y\textsubscript{10} \rightarrow $ delete $H\textsubscript{9}$
+
+$t\textsubscript{11}: x\textsubscript{11} = 11 \rightarrow$ draw $H\textsubscript{10} \rightarrow H\textsubscript{10}(x\textsubscript{11}) = 1 \rightarrow y\textsubscript{11} = 1 \rightarrow H\textsubscript{10}(x\textsubscript{11}) = y\textsubscript{11} \rightarrow $ keep $H\textsubscript{10}$\\
+
+The classifier mistook every hypothesis from t\textsubscript{2} to t\textsubscript{10} (that is, 9 mistakes, $|H| - 1$).
+
+\item Construct a hypothesis class and a sequence of examples for which
+Halving makes exactly $log_2 |H|$ mistakes. (Hint: The same hypothesis
+class as above and the same pool of x\textsubscript{t}'s may work here too.)
+
+Using the same hypothesis class, the same target function but not the same pool of x\textsubscript{t}'s as before, and breaking voting ties with $\hat{y}_t$ = 0.
+
+The sequence of observations should be:
+
+$x_t = floor(mean(H_t)+1)$
+
+That is, we choose the hypothesis for which the lower hypothesis will be wrong and also majority (at least until just one hypothesis -the correct one- is left) or will tie with the higher hypothesis, in which case we will break the tie with $\hat{y}_t$ = 0
+
+Example:
+
+$t_1: x_1 = 6 \rightarrow H_1 - H_5$ predict 0, $H_6 - H_{10}$ predict 1 $\rightarrow \hat{y}_1 = 0 \neq y\_1 = 1 \rightarrow$ delete $ H_1 - H_5$
+
+$t\textsubscript{2}: x\textsubscript{2} = 9 \rightarrow H\textsubscript{6} - H\textsubscript{8}$ predict 0, $H\textsubscript{9} - H\textsubscript{10}$ predict 1 $\rightarrow \hat{y}\textsubscript{2} = 0 \neq y\textsubscript{2} = 1 \rightarrow$ delete $ H\textsubscript{6} - H\textsubscript{8}$
+
+$t\textsubscript{3}: x\textsubscript{3} = 10 \rightarrow H\textsubscript{9}$ predicts 0, $H\textsubscript{10}$ predicts 1 $\rightarrow \hat{y}\textsubscript{3} = 0 \neq y\textsubscript{3} = 1 \rightarrow$ delete $ H\textsubscript{9}$
+
+And in t\textsubscript{4} we only have H\textsubscript{10} (the target function), having committed 3 mistakes ($\approx \log_2(10)$)\\
+
+\item Prove Theorem 3.
+
+\begin{equation}
+E\left[\sum_{t=1}^{n} l(x\textsubscript{t}, y\textsubscript{t}, \hat{y}\textsubscript{t})\right] \leq 1 + \ln|H|
+\end{equation}
+
+If we assume that at every time step one and only one hypothesis from the hypothesis class will be wrong, the expected value of the probability that we will choose this wrong hypothesis in every time step (and of course remove it from the hypothesis class once we observe the true label) is:
+
+\begin{equation}
+E\left[\sum_{t=1}^{n} l(x\textsubscript{t}, y\textsubscript{t}, \hat{y}\textsubscript{t})\right] = \sum_{k=2}^{|H|}\frac{1}{k}
+\end{equation}
+
+As the probability is uniform, the probability of drawing a certain hypothesis from a set of size N is $\frac{1}{N}$, and since we are making sure that at every time step we make it, this size is getting reduced at every step. Also, as only one hypothesis is wrong at every step, the cost is 1. Finally, the sum starts from 2 as when the size is 1 it is impossible to make a mistake, as the remaining hypothesis is the target function (assuming of course that the labels and the observations are consistent).
+
+\end{enumerate}
+\end{document}
