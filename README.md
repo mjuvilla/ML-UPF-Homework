@@ -1,1 +1,1 @@
-Programming
+Homework for the Machine Learning subject of the Intelligent Interactive Systems master.
